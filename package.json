@@ -1,0 +1,39 @@
+{
+  "name": "youtube-bilingual-notes",
+  "version": "1.0.0",
+  "description": "CLI: YouTube URL -> timestamped transcript -> bilingual EN→CN course notes (with key quotes)",
+  "main": "index.js",
+  "files": [
+    "dist",
+    "bin"
+  ],
+  "scripts": {
+    "test": "node --test",
+    "build": "tsc -p tsconfig.json",
+    "start": "node ./bin/ytbnotes.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Pinned/youtube-bilingual-notes.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Pinned/youtube-bilingual-notes/issues"
+  },
+  "homepage": "https://github.com/Pinned/youtube-bilingual-notes#readme",
+  "type": "module",
+  "bin": {
+    "ytbnotes": "./bin/ytbnotes.js"
+  },
+  "dependencies": {
+    "openai": "^6.25.0",
+    "zod": "^4.3.6"
+  },
+  "devDependencies": {
+    "@types/node": "^25.3.2",
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3"
+  }
+}
