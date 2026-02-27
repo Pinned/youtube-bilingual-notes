@@ -38,6 +38,8 @@ Options:
 - `--model` default `gpt-4.1-mini`
 - `--sttModel` default `whisper-1`
 - `--keep-audio` keep `00_audio.mp3`
+- `--retries` default `2` (applies to download/transcribe/summarize)
+- `--no-resume` disable resume; by default it will reuse existing outputs in `outDir` and continue from missing steps
 
 ## Notes
 - For stability, this tool segments by **time windows** and generates notes per segment, then produces a merged full handout.

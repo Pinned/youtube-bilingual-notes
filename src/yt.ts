@@ -12,6 +12,8 @@ function run(cmd: string, args: string[]) {
 /**
  * Downloads best-available audio to a single mp3 file.
  * Requires yt-dlp in PATH.
+ *
+ * Note: `yt-dlp -o <path>` expects a template. We pass a fixed filename.
  */
 export async function downloadAudio(url: string, outPath: string) {
   // ensure directory exists
