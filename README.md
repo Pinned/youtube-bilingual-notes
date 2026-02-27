@@ -14,6 +14,7 @@ CLI: **YouTube URL → audio → timestamped transcript → bilingual (EN→CN) 
 ## Requirements
 - Node.js 18+
 - `yt-dlp` installed and available in PATH
+- **ffmpeg** available in PATH (needed by yt-dlp for audio extraction on most platforms)
 - `OPENAI_API_KEY` set in environment
 
 ## Install
@@ -44,3 +45,7 @@ Options:
 ## Notes
 - For stability, this tool segments by **time windows** and generates notes per segment, then produces a merged full handout.
 - The transcription uses `verbose_json` to obtain timestamped segments.
+- `yt-dlp -o` expects an **output template**; this tool passes a fixed output path like `./out/00_audio.mp3`. If you hit weird filename behavior, upgrade yt-dlp and ensure ffmpeg is installed.
+
+## Windows tips
+- Install yt-dlp and ffmpeg (e.g. via `winget install yt-dlp.yt-dlp` and `winget install Gyan.FFmpeg`), then make sure both are in your PATH.

@@ -7,6 +7,36 @@ import { writeSrt, writeJsonl } from './transcript_formats.js';
 import { generateSegmentNotes, generateFullNotes } from './summarize.js';
 import { which, retry } from './utils.js';
 
+export type PipelineDeps = {
+  fs: typeof import('node:fs/promises');
+  path: typeof import('node:path');
+  which: typeof which;
+  retry: typeof retry;
+  downloadAudio: typeof downloadAudio;
+  transcribeAudio: typeof transcribeAudio;
+  chunkTranscriptByTime: typeof chunkTranscriptByTime;
+  writeSrt: typeof writeSrt;
+  writeJsonl: typeof writeJsonl;
+  generateSegmentNotes: typeof generateSegmentNotes;
+  generateFullNotes: typeof generateFullNotes;
+  log: Pick<typeof console, 'log' | 'warn' | 'error'>;
+};
+
+const defaultDeps: PipelineDeps = {
+  fs,
+  path,
+  which,
+  retry,
+  downloadAudio,
+  transcribeAudio,
+  chunkTranscriptByTime,
+  writeSrt,
+  writeJsonl,
+  generateSegmentNotes,
+  generateFullNotes,
+  log: console,
+};
+
 export type PipelineParams = {
   url: string;
   outDir: string;
@@ -19,7 +49,22 @@ export type PipelineParams = {
   retries: number;
 };
 
-export async function runPipeline(params: PipelineParams) {
+export async function runPipeline(params: PipelineParams, deps: PipelineDeps = defaultDeps) {
+  const {
+    fs,
+    path,
+    which,
+    retry,
+    downloadAudio,
+    transcribeAudio,
+    chunkTranscriptByTime,
+    writeSrt,
+    writeJsonl,
+    generateSegmentNotes,
+    generateFullNotes,
+    log,
+  } = deps;
+
   await fs.mkdir(params.outDir, { recursive: true });
 
   // dependency checks
@@ -45,7 +90,7 @@ export async function runPipeline(params: PipelineParams) {
   if (!params.resume || !hasAudio) {
     await retry(() => downloadAudio(params.url, audioPath), { retries: params.retries, label: 'downloadAudio' });
   } else {
-    console.log(`[resume] using existing audio: ${audioPath}`);
+    log.log(`[resume] using existing audio: ${audioPath}`);
   }
 
   // 2) transcribe
@@ -56,7 +101,7 @@ export async function runPipeline(params: PipelineParams) {
 
   let transcript: Awaited<ReturnType<typeof transcribeAudio>>;
   if (params.resume && hasTranscript) {
-    console.log(`[resume] using existing transcript: ${jsonlPath}`);
+    log.log(`[resume] using existing transcript: ${jsonlPath}`);
     // minimal loader from jsonl
     const raw = await fs.readFile(jsonlPath, 'utf8');
     const lines = raw
@@ -92,7 +137,7 @@ export async function runPipeline(params: PipelineParams) {
 
     if (params.resume && exists) {
       const md = await fs.readFile(mdPath, 'utf8');
-      console.log(`[resume] segment exists: ${mdPath}`);
+      log.log(`[resume] segment exists: ${mdPath}`);
       segmentNotes.push({ range: seg.rangeLabel, mdPath, md });
       continue;
     }
@@ -129,7 +174,7 @@ export async function runPipeline(params: PipelineParams) {
     );
     await fs.writeFile(fullPath, full, 'utf8');
   } else {
-    console.log(`[resume] full notes exists: ${fullPath}`);
+    log.log(`[resume] full notes exists: ${fullPath}`);
   }
 
   // 5) cleanup
